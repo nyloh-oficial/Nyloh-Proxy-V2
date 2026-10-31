@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131d">
+  <title>New Tab</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <main id="auth-screen" class="auth-wrap">
+    <section class="auth-card">
+      <div class="brand-mark">N</div>
+      <p class="eyebrow">NYLOH BROWSER</p>
+      <h1>Your space on the web.</h1>
+      <p class="muted">Sign in to open your private browser workspace.</p>
+      <form id="auth-form">
+        <label>Username<input id="username" autocomplete="username" minlength="3" maxlength="24" required placeholder="Your username"></label>
+        <label>Password<input id="password" type="password" autocomplete="current-password" required placeholder="Your password"></label>
+        <p id="auth-error" class="error" aria-live="polite"></p>
+        <button class="primary" type="submit" id="login-btn">Enter browser</button>
+      </form>
+      <button class="text-button" id="show-signup">Create an account</button>
+      <p class="tiny">Accounts are private to this site. Do not reuse an important password.</p>
+    </section>
+  </main>
+
+  <main id="app" class="app hidden">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark small">N</span><span>Nyloh</span></div>
+      <div class="top-actions">
+        <span id="current-user" class="user-chip"></span>
+        <button id="messages-toggle" class="icon-button" title="Messages">✉ <i id="unread-dot"></i></button>
+        <button id="admin-toggle" class="icon-button hidden" title="Owner controls">⚙</button>
+        <button id="logout" class="ghost-button">Sign out</button>
+      </div>
+    </header>
+
+    <section id="home" class="home">
+      <div class="hero">
+        <p class="eyebrow">A FRESH START</p>
+        <h1>Where to?</h1>
+        <form id="search-form" class="search-box">
+          <span>⌕</span><input id="search-input" placeholder="Search the web or enter a URL" autocomplete="off">
+          <button aria-label="Search">↵</button>
+        </form>
+        <div id="shortcuts" class="shortcuts">
+          <button class="shortcut" data-url="https://www.youtube.com"><span class="shortcut-icon youtube"><svg viewBox="0 0 48 48" aria-hidden="true"><rect x="4" y="10" width="40" height="28" rx="9" fill="#ff0033"/><path d="M20 17.5 32 24 20 30.5Z" fill="white"/></svg></span><span>YouTube</span></button>
+          <button class="shortcut" data-url="https://webdasher.com"><span class="shortcut-icon geometry"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 7h28l3 3v28l-3 3H10l-3-3V10z" fill="#43caff" stroke="#d5ffff" stroke-width="2"/><path d="M14 13h7v7h-7zm13 0h7v7h-7zM13 27h22v7H13z" fill="#10223c"/><path d="M17 27v4m7-4v4m7-4v4" stroke="#75f6ff" stroke-width="2"/></svg></span><span>Web Dasher</span></button>
+          <button class="shortcut" data-url="https://chatgpt.com"><span class="shortcut-icon ai"><svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="aipreview" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c6a8ff"/><stop offset=".55" stop-color="#8065ff"/><stop offset="1" stop-color="#45d9ff"/></linearGradient></defs><path d="M24 3 29.5 16.5 43 22l-13.5 5.5L24 41l-5.5-13.5L5 22l13.5-5.5Z" fill="url(#aipreview)"/><path d="m37 4 2.2 5.8L45 12l-5.8 2.2L37 20l-2.2-5.8L29 12l5.8-2.2Z" fill="#fff"/><circle cx="24" cy="22" r="4" fill="#fff"/></svg></span><span>AI</span></button>
+          <button class="shortcut add-shortcut" id="add-shortcut"><span class="shortcut-icon">＋</span><span>Add shortcut</span></button>
+        </div>
+      </div>
+      <p class="home-note">Your shortcuts are saved on this device. Some websites do not allow embedded viewing.</p>
+    </section>
+
+    <section id="browser" class="browser-view hidden">
+      <div class="browser-toolbar">
+        <button id="browser-home" class="icon-button" title="Home">⌂</button>
+        <button id="back" class="icon-button" title="Back">‹</button>
+        <button id="forward" class="icon-button" title="Forward">›</button>
+        <button id="reload" class="icon-button" title="Reload">↻</button>
+        <form id="address-form" class="address-form"><input id="address" placeholder="Search or enter address"><button>Go</button></form>
+        <button id="open-external" class="icon-button" title="Open in a new tab">↗</button>
+      </div>
+      <div class="frame-message" id="frame-message">If this page stays blank, the website may block embedding. Use ↗ to open it in a normal tab.</div>
+      <iframe id="web-frame" title="Browser content" referrerpolicy="no-referrer" sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+    </section>
+
+    <aside id="messages-panel" class="side-panel hidden">
+      <div class="panel-heading"><div><p class="eyebrow">INBOX</p><h2>Messages</h2></div><button class="icon-button close-panel">×</button></div>
+      <form id="message-form" class="compose"><input id="recipient" placeholder="Send to username" required><textarea id="message-text" placeholder="Write a message..." required maxlength="1500"></textarea><button class="primary">Send message</button></form>
+      <div id="message-list" class="message-list"></div>
+    </aside>
+
+    <aside id="admin-panel" class="side-panel hidden">
+      <div class="panel-heading"><div><p class="eyebrow">OWNER AREA</p><h2>Control room</h2></div><button class="icon-button close-panel">×</button></div>
+      <p class="muted">Ban or unban accounts. Banned users are blocked from entering the workspace.</p>
+      <form id="ban-form" class="compose"><input id="ban-username" placeholder="Username" required><button class="primary">Toggle ban</button></form>
+      <p id="admin-status" class="tiny" aria-live="polite"></p>
+      <div id="user-list" class="message-list"></div>
+    </aside>
+  </main>
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+  <dialog id="shortcut-dialog">
+    <form method="dialog" id="shortcut-form" class="dialog-card">
+      <button class="dialog-x" value="cancel" aria-label="Close">×</button>
+      <p class="eyebrow">PERSONALIZE</p><h2>Add a shortcut</h2>
+      <label>Name<input id="shortcut-name" required maxlength="20" placeholder="My site"></label>
+      <label>Website URL<input id="shortcut-url" type="url" required placeholder="https://example.com"></label>
+      <button class="primary" value="save">Add shortcut</button>
+    </form>
+  </dialog>
+  <script src="app.js"></script>
+</body>
+</html>
